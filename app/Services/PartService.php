@@ -56,6 +56,14 @@ class PartService
     {
         $part = PartRecord::where('id', $part_id)->first();
         if (!empty($part)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='part_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where part_id = ".$part_id;
+                DB::delete($sql2);
+            }
             $part->delete();
         }
     }
@@ -71,6 +79,14 @@ class PartService
             ->withTrashed()
             ->first();
         if (!empty($part_record)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='part_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where part_id = ".$part_id;
+                DB::delete($sql2);
+            }
             $part_record->forceDelete();
         }
     }

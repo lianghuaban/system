@@ -7,6 +7,7 @@ use App\Models\DeviceTrack;
 use App\Models\PartTrack;
 use App\Models\SoftwareTrack;
 use App\Support\Support;
+use DB;
 
 /**
  * 和设备记录相关的功能服务
@@ -119,6 +120,14 @@ class DeviceService
     {
         $device_record = DeviceRecord::where('id', $device_id)->first();
         if (!empty($device_record)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='device_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where device_id = ".$device_id;
+                DB::delete($sql2);
+            }
             $device_record->delete();
         }
     }
@@ -147,6 +156,14 @@ class DeviceService
             ->withTrashed()
             ->first();
         if (!empty($device_record)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='device_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where device_id = ".$device_id;
+                DB::delete($sql2);
+            }
             $device_record->forceDelete();
         }
     }

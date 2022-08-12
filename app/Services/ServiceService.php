@@ -5,6 +5,7 @@ namespace App\Services;
 
 
 use App\Models\ServiceRecord;
+use App\Models\ServiceTrack;
 
 class ServiceService
 {
@@ -17,7 +18,8 @@ class ServiceService
     {
         $service = ServiceRecord::where('id', $service_id)->first();
         if (!empty($service)) {
-            $service->delete();
+           
+            $result = $service->delete();
         }
     }
 
@@ -32,6 +34,7 @@ class ServiceService
             ->withTrashed()
             ->first();
         if (!empty($service)) {
+            // var_dump($service);
             $service->forceDelete();
         }
     }

@@ -5,6 +5,7 @@ namespace App\Services;
 
 
 use App\Models\ConsumableRecord;
+use DB;
 
 class ConsumableService
 {
@@ -17,6 +18,14 @@ class ConsumableService
     {
         $consumable = ConsumableRecord::where('id', $consumable_id)->first();
         if (!empty($consumable)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='consumable_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where consumable_id = ".$consumable_id;
+                DB::delete($sql2);
+            }
             $consumable->delete();
         }
     }
@@ -32,6 +41,14 @@ class ConsumableService
             ->withTrashed()
             ->first();
         if (!empty($consumable)) {
+            $sql = " select TABLE_NAME from information_schema.columns where TABLE_SCHEMA = '".$_ENV['DB_DATABASE']."' and column_name='consumable_id'";
+            $tables = DB::select($sql);
+            $tables = json_decode(json_encode($tables),true);
+            foreach ($tables as $table)
+            {
+                $sql2 = "delete from ".$table['TABLE_NAME']." where consumable_id = ".$consumable_id;
+                DB::delete($sql2);
+            }
             $consumable->forceDelete();
         }
     }
