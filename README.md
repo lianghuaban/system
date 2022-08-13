@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
     <img src="https://tva1.sinaimg.cn/large/008eGmZEly1gov9jz5uk9j30n10zawfd.jpg" width="120"/>
 </p>
@@ -80,3 +81,6 @@
 咖啡壶（Chemex）遵循 [GPL3.0](https://www.gnu.org/licenses/gpl-3.0.html) 开源协议。
 
 GPL3.0 协议受国家法律认可且保护，一切基于 Chemex 进行二次修改、分发、开源、商业行为必须注明原作者及修改内容。
+=======
+# demo
+>>>>>>> be66e6c4c09f4f720a503eef7669de74fbd0c06f
