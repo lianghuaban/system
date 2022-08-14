@@ -513,7 +513,7 @@ class DeviceRecordController extends AdminController
             }
             // @permissions
             if (Admin::user()->can('device.record.export')) {
-                $titles = ['id' => 'ID', 'name' => '名称','asset_number'=>'资产编号','device_status'=>'设备状态','category.name'=>'分类','vendor.name'=>'厂商','mac'=>'MAC','ip'=>'IP','purchased'=>'购入日期','expired'=>'过保日期','admin_user.name'=>'用户','admin_user.department.name'=>'部门','expiration_left_days'=>'保固剩余时间','Location'=>'位置','SN'=>'序列号','型号'=>'型号','PO'=>'采购订单号','Owner'=>'购买者'];
+                $titles = ['id' => 'ID', 'name' => '名称','asset_number'=>'资产编号','device_status'=>'设备状态','category.name'=>'分类','vendor.name'=>'厂商','mac'=>'MAC','ip'=>'IP','purchased'=>'购入日期','expired'=>'过保日期','admin_user.name'=>'用户','admin_user.department.name'=>'部门','Location'=>'位置','SN'=>'序列号','型号'=>'型号','PO'=>'采购订单号','Owner'=>'购买者'];
                 $grid->export($titles);
                 $grid->export()->rows(function ($rows) {
                     foreach ($rows as $row) {
