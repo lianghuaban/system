@@ -49,7 +49,6 @@ use Illuminate\Http\Request;
  * @property int id
  * @property float price
  * @property string purchased
- * @property int depreciation_rule_id
  * @property string discard_at
  * @property string deleted_at
  * @property string asset_number
@@ -94,7 +93,7 @@ class DeviceRecordController extends AdminController
     {
         return $content
             ->title($this->title())
-            ->description($this->description()['index'] ?? trans('admin.show'))
+            // ->description($this->description()['index'] ?? trans('admin.show'))
             ->body(function (Row $row) use ($id) {
                 $row->column(7, $this->detail($id));
                 $row->column(5, function (Column $column) use ($id) {
@@ -135,26 +134,26 @@ class DeviceRecordController extends AdminController
             $show->field('id', '', $sort_columns);
             $show->field('name', '', $sort_columns);
             $show->field('asset_number', '', $sort_columns);
-            $show->field('description', '', $sort_columns);
+            // $show->field('description', '', $sort_columns);
             $show->field('category.name', '', $sort_columns);
             $show->field('vendor.name', '', $sort_columns);
             $show->field('mac', '', $sort_columns);
             $show->field('ip', '', $sort_columns);
-            $show->field('photo', '', $sort_columns)->image();
+            // $show->field('photo', '', $sort_columns)->image();
             $show->field('price', '', $sort_columns);
-            $show->field('depreciation_price', '', $sort_columns)->as(function () {
-                $device_record = \App\Models\DeviceRecord::where('id', $this->id)->first();
-                if (!empty($device_record)) {
-                    $depreciation_rule_id = Support::getDepreciationRuleId($device_record);
-                    return Support::depreciationPrice($this->price, $this->purchased, $depreciation_rule_id);
-                }
-            });
+            // $show->field('depreciation_price', '', $sort_columns)->as(function () {
+            //     $device_record = \App\Models\DeviceRecord::where('id', $this->id)->first();
+            //     if (!empty($device_record)) {
+            //         $depreciation_rule_id = Support::getDepreciationRuleId($device_record);
+            //         return Support::depreciationPrice($this->price, $this->purchased, $depreciation_rule_id);
+            //     }
+            // });
             $show->field('purchased', '', $sort_columns);
             $show->field('expired', '', $sort_columns);
             $show->field('admin_user.name', '', $sort_columns);
             $show->field('admin_user.department.name', '', $sort_columns);
-            $show->field('depreciation.name', '', $sort_columns);
-            $show->field('depreciation.termination', '', $sort_columns);
+            // $show->field('depreciation.name', '', $sort_columns);
+            // $show->field('depreciation.termination', '', $sort_columns);
 
             /**
              * 自定义字段.
@@ -240,7 +239,7 @@ class DeviceRecordController extends AdminController
             $sort_columns = $this->sortColumns();
             $grid->column('id', '', $sort_columns);
             $grid->column('name', '', $sort_columns);
-            $grid->column('photo', '', $sort_columns)->image('', 50, 50);
+            // $grid->column('photo', '', $sort_columns)->image('', 50, 50);
             $grid->column('asset_number_qrcode', '', $sort_columns)->qrcode(function () {
                 return 'device:' . $this->asset_number;
             });
@@ -255,7 +254,7 @@ class DeviceRecordController extends AdminController
             $grid->column('device_status', '', $sort_columns)->display(function () {
                 return $this->status()[0];
             });
-            $grid->column('description', '', $sort_columns);
+            // $grid->column('description', '', $sort_columns);
             $grid->column('category.name', '', $sort_columns);
             $grid->column('vendor.name', '', $sort_columns);
             $grid->column('mac', '', $sort_columns);
@@ -273,7 +272,7 @@ class DeviceRecordController extends AdminController
             $grid->column('expiration_left_days', '', $sort_columns)->display(function () {
                 return ExpirationService::itemExpirationLeftDaysRender('device', $this->id);
             });
-            $grid->column('depreciation.name', '', $sort_columns);
+            // $grid->column('depreciation.name', '', $sort_columns);
             $grid->column('created_at', '', $sort_columns);
             $grid->column('updated_at', '', $sort_columns);
 
@@ -384,12 +383,12 @@ class DeviceRecordController extends AdminController
             $grid->showColumnSelector();
             $grid->hideColumns([
                 'id',
-                'photo',
+                // 'photo',
                 'vendor.name',
-                'description',
+                // 'description',
                 'price',
                 'expired',
-                'depreciation.name',
+                // 'depreciation.name',
                 'expiration_left_days',
                 'admin_user.department.name',
                 'created_at',
@@ -404,7 +403,7 @@ class DeviceRecordController extends AdminController
                 array_merge([
                     'id',
                     'asset_number',
-                    'description',
+                    // 'description',
                     'category.name',
                     'vendor.name',
                     'name',
@@ -514,6 +513,8 @@ class DeviceRecordController extends AdminController
             }
             // @permissions
             if (Admin::user()->can('device.record.export')) {
+                $titles = ['id' => 'ID', 'name' => '名称','asset_number'=>'资产编号','device_status'=>'设备状态','category.name'=>'分类','vendor.name'=>'厂商','mac'=>'MAC','ip'=>'IP','purchased'=>'购入日期','expired'=>'过保日期','admin_user.name'=>'用户','admin_user.department.name'=>'部门','expiration_left_days'=>'保固剩余时间','Location'=>'位置','SN'=>'序列号','型号'=>'型号','PO'=>'采购订单号','Owner'=>'购买者'];
+                $grid->export($titles);
                 $grid->export()->rows(function ($rows) {
                     foreach ($rows as $row) {
                         $device = \App\Models\DeviceRecord::query()
@@ -531,8 +532,6 @@ class DeviceRecordController extends AdminController
                         $row['admin_user.name'] = $device?->admin_user->name ?? '未知';
                         //导出部门定义
                         $row['admin_user.department.name'] = $device?->admin_user?->department->name ?? '未知';
-                        //导出折旧规则定义
-                        $row['depreciation.name'] = $device?->depreciation->name ?? '未知';
                         //导出设备状态定义
                         $row['device_status'] = $device?->status()[1] ?? '未知';
                         //导出保固剩余天数定义
@@ -574,23 +573,23 @@ class DeviceRecordController extends AdminController
                     ->text('ip');
                 $row->width(6)
                     ->currency('price');
-                $row->width(6)
-                    ->select('depreciation_rule_id')
-                    ->options(DepreciationRule::pluck('name', 'id'))
-                    ->help(admin_trans_label('Depreciation Rule Help'));
+                // $row->width(6)
+                //     ->select('depreciation_rule_id')
+                //     ->options(DepreciationRule::pluck('name', 'id'))
+                //     ->help(admin_trans_label('Depreciation Rule Help'));
                 $row->width(6)
                     ->date('purchased');
                 $row->width(6)
                     ->date('expired')
                     ->attribute('autocomplete', 'off');
 
-                $row->width(6)
-                    ->text('description');
-                $row->width()
-                    ->image('photo')
-                    ->autoUpload()
-                    ->uniqueName()
-                    ->help(admin_trans_label('Photo Help'));
+                // $row->width(6)
+                //     ->text('description');
+                // $row->width()
+                //     ->image('photo')
+                //     ->autoUpload()
+                //     ->uniqueName()
+                //     ->help(admin_trans_label('Photo Help'));
 
                 /**
                  * 自定义字段
